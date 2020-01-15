@@ -1,5 +1,7 @@
-module ListBag
-( empty
+module Ex1
+( ListBag (LB)
+, wf
+, empty
 , singleton
 , fromList
 , isEmpty
@@ -10,12 +12,12 @@ module ListBag
 
 import Data.Maybe
 
-data ListBag a = ListBag [(a, Int)] 
+data ListBag a = LB [(a, Int)] 
   deriving (Show, Eq)
 
-empty = ListBag []
+empty = LB []
 
-singleton v = ListBag [(v,1)]
+singleton v = LB [(v,1)]
 
 fromList :: Eq a => [a] -> ListBag a
 fromList [x] = add x empty
@@ -27,28 +29,28 @@ search a ((x,y):rest) | a == x = Just (x,y)
                       | otherwise = search a rest
 
 searchLB :: Eq a => a -> ListBag a -> Maybe (a, Int)
-searchLB a (ListBag x) = search a x 
+searchLB a (LB x) = search a x 
   
 
 pushFront :: (a, Int) -> ListBag a -> ListBag a 
-pushFront (x,y) (ListBag z)= ListBag ([(x,y)] ++ z)
+pushFront (x,y) (LB z)= LB ([(x,y)] ++ z)
 
 add :: Eq a => a -> ListBag a -> ListBag a
-add a (ListBag ((x, y):rest))
-      | a == x =  ListBag ((x, y + 1):rest)
-      | otherwise = pushFront (x, y) (add a (ListBag rest))
-add a (ListBag []) = singleton a
+add a (LB ((x, y):rest))
+      | a == x =  LB ((x, y + 1):rest)
+      | otherwise = pushFront (x, y) (add a (LB rest))
+add a (LB []) = singleton a
 
 
 wf :: Eq a => ListBag a -> Bool
-wf (ListBag ((x,y):rest)) 
-      | (search x rest) == Nothing = wf(ListBag rest)
+wf (LB ((x,y):rest)) 
+      | (search x rest) == Nothing = wf(LB rest)
       | otherwise = False
-wf (ListBag []) = True
+wf (LB []) = True
 
 isEmpty :: ListBag a -> Bool
-isEmpty (ListBag []) = True
-isEmpty (ListBag _) = False
+isEmpty (LB []) = True
+isEmpty (LB _) = False
 
 mul :: Eq a => a -> ListBag a -> Int
 mul v bag
@@ -63,24 +65,16 @@ listify (x,y)
       | otherwise = x : listify (x, y-1)
 
 toList :: ListBag a -> [a]
-toList (ListBag ((x,y):rest)) = (listify (x,y)) ++ (toList (ListBag rest))
-toList (ListBag []) = []  
+toList (LB ((x,y):rest)) = (listify (x,y)) ++ (toList (LB rest))
+toList (LB []) = []  
 
 addTuple :: Eq a => (a, Int) -> ListBag a -> ListBag a 
-addTuple t (ListBag ((x,y):rest))
-      | (fst t) == x = ListBag((x,y + (snd t)):rest)
-      | otherwise = pushFront (x, y) (addTuple t (ListBag rest))
-addTuple t (ListBag []) = ListBag [t]      
+addTuple t (LB ((x,y):rest))
+      | (fst t) == x = LB((x,y + (snd t)):rest)
+      | otherwise = pushFront (x, y) (addTuple t (LB rest))
+addTuple t (LB []) = LB [t]      
 
 sumBag :: Eq a => ListBag a -> ListBag a -> ListBag a 
-sumBag bag (ListBag [y]) =  addTuple y bag
-sumBag bag (ListBag (y:ys)) = sumBag (addTuple y bag) (ListBag ys)
-
-
-mapLB :: (a -> b) -> ListBag a  -> ListBag b
-mapLB _ (ListBag []) = empty
-mapLB f (ListBag ((x, y):rest)) = pushFront ((f x) , y) (mapLB  f (ListBag rest))
-
-
-
+sumBag bag (LB [y]) =  addTuple y bag
+sumBag bag (LB (y:ys)) = sumBag (addTuple y bag) (LB ys)
 
