@@ -22,13 +22,13 @@ searchLB :: Eq a => a -> ListBag a -> Maybe (a, Int)
 searchLB a (ListBag x) = search a x 
   
 
-push_front :: (a, Int) -> ListBag a -> ListBag a 
-push_front (x,y) (ListBag z)= ListBag ([(x,y)] ++ z)
+pushFront :: (a, Int) -> ListBag a -> ListBag a 
+pushFront (x,y) (ListBag z)= ListBag ([(x,y)] ++ z)
 
 add :: Eq a => a -> ListBag a -> ListBag a
 add a (ListBag ((x, y):rest))
       | a == x =  ListBag ((x, y + 1):rest)
-      | otherwise = push_front (x, y) (add a (ListBag rest))
+      | otherwise = pushFront (x, y) (add a (ListBag rest))
 add a (ListBag []) = singleton a
 
 
@@ -61,9 +61,18 @@ toList (ListBag []) = []
 addTuple :: Eq a => (a, Int) -> ListBag a -> ListBag a 
 addTuple t (ListBag ((x,y):rest))
       | (fst t) == x = ListBag((x,y + (snd t)):rest)
-      | otherwise = push_front (x, y) (addTuple t (ListBag rest))
+      | otherwise = pushFront (x, y) (addTuple t (ListBag rest))
 addTuple t (ListBag []) = ListBag [t]      
 
 sumBag :: Eq a => ListBag a -> ListBag a -> ListBag a 
 sumBag bag (ListBag [y]) =  addTuple y bag
 sumBag bag (ListBag (y:ys)) = sumBag (addTuple y bag) (ListBag ys)
+
+
+mapLB :: (a -> b) -> ListBag a  -> ListBag b
+mapLB _ (ListBag []) = empty
+mapLB f (ListBag ((x, y):rest)) = pushFront ((f x) , y) (mapLB  f (ListBag rest))
+
+
+
+
