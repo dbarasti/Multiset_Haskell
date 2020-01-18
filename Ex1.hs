@@ -8,6 +8,7 @@ module Ex1
 , mul
 , toList
 , sumBag
+, pushFront
 ) where
 
 import Data.Maybe
