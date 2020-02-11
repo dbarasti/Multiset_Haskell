@@ -5,6 +5,13 @@ import Data.Maybe
 data ListBag a = ListBag [(a, Int)] 
   deriving (Show, Eq)
 
+wf :: Eq a => ListBag a -> Bool
+wf (ListBag ((x,y):rest)) 
+      | (search x rest) == Nothing = wf(ListBag rest)
+      | otherwise = False
+wf (ListBag []) = True
+
+empty :: ListBag
 empty = ListBag []
 
 singleton v = ListBag [(v,1)]
@@ -30,13 +37,6 @@ add a (ListBag ((x, y):rest))
       | a == x =  ListBag ((x, y + 1):rest)
       | otherwise = pushFront (x, y) (add a (ListBag rest))
 add a (ListBag []) = singleton a
-
-
-wf :: Eq a => ListBag a -> Bool
-wf (ListBag ((x,y):rest)) 
-      | (search x rest) == Nothing = wf(ListBag rest)
-      | otherwise = False
-wf (ListBag []) = True
 
 isEmpty :: ListBag a -> Bool
 isEmpty (ListBag []) = True
